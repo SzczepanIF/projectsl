@@ -1,11 +1,13 @@
 var player,
   joystick,
+  spacebar,
   nk,
   benq,
   avaus,
   mediaamba,
   nsn,
   tigerspike,
+  ball,
   building,
   walkUp,
   walkDown,
@@ -25,9 +27,10 @@ export default class extends Phaser.State {
     this.load.image('mediaamba', '/images/mediaamba.png');
     this.load.image('nsn', '/images/nsn.jpg');
     this.load.image('tigerspike', '/images/tigerspike.png');
-    this.load.image('background', '/images/map150x100.png');
+    this.load.image('background', '/images/map61x36.png');
 
     this.load.image('building', '/images/intensememories1.png');
+    this.load.image('ball', '/images/ball.png');
 
     this.load.spritesheet('player', '/images/player_up.png', 32, 32, 4);
   }
@@ -43,6 +46,14 @@ export default class extends Phaser.State {
   update () {
 
     player.body.velocity.set(0);
+
+    if (ball.body.velocity.x > 0) {
+      ball.body.velocity.x--;
+    }
+
+    if (ball.body.velocity.y > 0) {
+      ball.body.velocity.y--;
+    }
 
     if (joystick.left.isDown) {
       player.body.velocity.x = -200;
@@ -72,6 +83,26 @@ export default class extends Phaser.State {
       player.animations.stop(null, true);
     }
 
+    if (spacebar.isDown) {
+      if (this.physics.arcade.overlap(player, ball)) {
+        console.log(player.angle);
+        switch (player.angle) {
+          case 0:
+            this.physics.arcade.moveToXY(ball, ball.x, ball.y - 400, 1000);
+            break;
+          case 90:
+            this.physics.arcade.moveToXY(ball, ball.x + 400, ball.y, 1000);
+            break;
+          case -180:
+            this.physics.arcade.moveToXY(ball, ball.x, ball.y + 400, 1000);
+            break;
+          case -90:
+            this.physics.arcade.moveToXY(ball, ball.x - 400, ball.y, 1000);
+            break;
+        }
+      }
+    }
+
   //  this.physics.arcade.moveToObject(nk, player, 100);
 //    this.physics.arcade.moveToObject(benq, player, 200);
 //    this.physics.arcade.moveToObject(avaus, player, 150);
@@ -80,6 +111,8 @@ export default class extends Phaser.State {
 //    this.physics.arcade.moveToObject(tigerspike, player, 250);
 
     this.physics.arcade.collide(player, building);
+
+    this.physics.arcade.collide (player, ball);
 
   }
 
@@ -90,12 +123,13 @@ export default class extends Phaser.State {
   _initializePlayer() {
     player = this.add.sprite(200, 200, 'player');
     player.anchor.setTo(0.5, 0.5);
-    this.physics.enable(player);
+    this.physics.enable(player, Phaser.Physics.ARCADE);
     this.camera.follow(player);
-
+    player.body.collidWorldBounds = true;
     walkUp = player.animations.add('walk_up');
 
     joystick = this.input.keyboard.createCursorKeys();
+    spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
   }
 
@@ -135,10 +169,20 @@ export default class extends Phaser.State {
     this.physics.enable(tigerspike);
     tigerspike.enableBody = true;
     tigerspike.body.velocity.set(5);*/
+
+    ball = this.add.sprite(205, 200, 'ball');
+    ball.anchor.setTo(0.5, 0.5);
+    this.physics.enable(ball, Phaser.Physics.ARCADE);
+    ball.enableBody = true;
+    ball.body.moves = true;
+    ball.body.velocity.set(0);
+    ball.body.immovable = false;
+    ball.body.collideWorldBounds = true;
+    ball.body.bounce.setTo(0.5, 0.5);
   }
 
   _initBuildings() {
-    building = this.add.sprite(1000, 1000, 'building');
+    building = this.add.sprite(700, -75, 'building');
     building.anchor.setTo(0.5, 0.5);
     this.physics.enable(building);
     building.enableBody = true;
