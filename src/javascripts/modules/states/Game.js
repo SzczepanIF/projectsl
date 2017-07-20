@@ -5,7 +5,12 @@ var player,
   avaus,
   mediaamba,
   nsn,
-  tigerspike
+  tigerspike,
+  building,
+  walkUp,
+  walkDown,
+  walkLeft,
+  walkRight;
 
 export default class extends Phaser.State {
 
@@ -13,7 +18,7 @@ export default class extends Phaser.State {
     // Initialator
   }
   preload () {
-    this.load.image('player', '/images/unic-logo.png');
+    //this.load.image('player', '/images/unic-logo.png');
     this.load.image('nk', '/images/nk.png');
     this.load.image('benq', '/images/benq.png');
     this.load.image('avaus', '/images/avaus.jpg');
@@ -21,40 +26,61 @@ export default class extends Phaser.State {
     this.load.image('nsn', '/images/nsn.jpg');
     this.load.image('tigerspike', '/images/tigerspike.png');
     this.load.image('background', '/images/map150x100.png');
+
+    this.load.image('building', '/images/intensememories1.png');
+
+    this.load.spritesheet('player', '/images/player_up.png', 32, 32, 4);
   }
 
   create () {
     this._loadMap();
     this.physics.startSystem(Phaser.Physics.ARCADE);
+    this._initBuildings();
     this._initializePlayer();
     this._initializeStudents();
   }
 
   update () {
+
     player.body.velocity.set(0);
 
     if (joystick.left.isDown) {
-      player.body.velocity.x = -300;
-    }
+      player.body.velocity.x = -200;
+      player.angle = 270;
+      player.animations.play('walk_up', 15, true);
 
+    }
     if (joystick.right.isDown) {
-      player.body.velocity.x = 300;
+      player.body.velocity.x = 200;
+      player.angle = 90;
+      player.animations.play('walk_up', 15, true);
+
+    }
+     if (joystick.up.isDown) {
+      player.body.velocity.y = -200;
+      player.angle = 0;
+      player.animations.play('walk_up', 15, true);
+
+    }
+     if (joystick.down.isDown) {
+      player.body.velocity.y = 200;
+      player.angle = 180;
+      player.animations.play('walk_up', 15, true);
     }
 
-    if (joystick.up.isDown) {
-      player.body.velocity.y = -300;
+    if (!joystick.left.isDown && !joystick.right.isDown && !joystick.up.isDown && !joystick.down.isDown) {
+      player.animations.stop(null, true);
     }
 
-    if (joystick.down.isDown) {
-      player.body.velocity.y = 300;
-    }
+  //  this.physics.arcade.moveToObject(nk, player, 100);
+//    this.physics.arcade.moveToObject(benq, player, 200);
+//    this.physics.arcade.moveToObject(avaus, player, 150);
+//  //  this.physics.arcade.moveToObject(mediaamba, player, 90);
+//    this.physics.arcade.moveToObject(nsn, player, 130);
+//    this.physics.arcade.moveToObject(tigerspike, player, 250);
 
-    this.physics.arcade.moveToObject(nk, player, 100);
-    this.physics.arcade.moveToObject(benq, player, 200);
-    this.physics.arcade.moveToObject(avaus, player, 150);
-    this.physics.arcade.moveToObject(mediaamba, player, 90);
-    this.physics.arcade.moveToObject(nsn, player, 130);
-    this.physics.arcade.moveToObject(tigerspike, player, 250);
+    this.physics.arcade.collide(player, building);
+
   }
 
   render () {
@@ -67,12 +93,14 @@ export default class extends Phaser.State {
     this.physics.enable(player);
     this.camera.follow(player);
 
+    walkUp = player.animations.add('walk_up');
+
     joystick = this.input.keyboard.createCursorKeys();
 
   }
 
   _initializeStudents() {
-    nk = this.add.sprite(100, 100, 'nk');
+  /*  nk = this.add.sprite(100, 100, 'nk');
     nk.anchor.setTo(0.5, 0.5);
     this.physics.enable(nk);
     nk.enableBody = true;
@@ -106,7 +134,18 @@ export default class extends Phaser.State {
     tigerspike.anchor.setTo(0.5, 0.5);
     this.physics.enable(tigerspike);
     tigerspike.enableBody = true;
-    tigerspike.body.velocity.set(5);
+    tigerspike.body.velocity.set(5);*/
+  }
+
+  _initBuildings() {
+    building = this.add.sprite(1000, 1000, 'building');
+    building.anchor.setTo(0.5, 0.5);
+    this.physics.enable(building);
+    building.enableBody = true;
+    building.body.velocity.set(1);
+    building.body.moves = false;
+    building.body.collideWorldBounds = true;
+
   }
 
   _loadMap() {
