@@ -38,34 +38,34 @@ export default class extends Phaser.State {
     cloud8.x++;
 
     if (cloud1.x === 1024) {
-      cloud1.x = -120;
+      cloud1.x =  cloud1.scale.x * -120;
     }
 
     if (cloud3.x === 1024) {
-      cloud3.x = -120;
+      cloud3.x =  cloud3.scale.x * -120;
     }
 
     if (cloud6.x === 1024) {
-      cloud6.x = -120;
+      cloud6.x = cloud6.scale.x * -120;
     }
 
     if (cloud8.x === 1024) {
-      cloud8.x = -120;
+      cloud8.x = cloud8.scale.x * -120;
     }
 
-    if (cloud2.x === -120) {
+    if (cloud2.x === cloud2.scale.x * -120) {
       cloud2.x = 1024;
     }
 
-    if (cloud4.x === -120) {
+    if (cloud4.x === cloud4.scale.x * -120) {
       cloud4.x = 1024;
     }
 
-    if (cloud5.x === -120) {
+    if (cloud5.x === cloud5.scale.x * -120) {
       cloud5.x = 1024;
     }
 
-    if (cloud7.x === -120) {
+    if (cloud7.x === cloud7.scale.x * -120) {
       cloud7.x = 1024;
     }
   }
@@ -138,6 +138,24 @@ export default class extends Phaser.State {
       cloud6.alpha = 0.2;
       cloud7.alpha = 0.2;
       cloud8.alpha = 0.2;
+
+      cloud1.scale.x = this.rnd.integerInRange(2, 7);
+      cloud2.scale.x = this.rnd.integerInRange(2, 6);
+      cloud3.scale.x = this.rnd.integerInRange(2, 5);
+      cloud4.scale.x = this.rnd.integerInRange(2, 6);
+      cloud5.scale.x = this.rnd.integerInRange(2, 8);
+      cloud6.scale.x = this.rnd.integerInRange(2, 7);
+      cloud7.scale.x = this.rnd.integerInRange(2, 8);
+      cloud8.scale.x = this.rnd.integerInRange(2, 6);
+
+      cloud1.scale.y = cloud1.scale.x;
+      cloud2.scale.y = cloud2.scale.x;
+      cloud3.scale.y = cloud3.scale.x;
+      cloud4.scale.y = cloud4.scale.x;
+      cloud5.scale.y = cloud5.scale.x;
+      cloud6.scale.y = cloud6.scale.x;
+      cloud7.scale.y = cloud7.scale.x;
+      cloud8.scale.y = cloud8.scale.x;
   }
 
   _loadBackground() {
