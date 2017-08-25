@@ -11,6 +11,10 @@
       }
     },
 
+    "music": {
+
+    },
+
     "static": {
       "src": "static",
       "dest": "./"

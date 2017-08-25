@@ -12,7 +12,9 @@ var player,
   walkUp,
   walkDown,
   walkLeft,
-  walkRight;
+  walkRight,
+  dialogBox,
+  dialogBoxText;
 
 export default class extends Phaser.State {
 
@@ -27,7 +29,7 @@ export default class extends Phaser.State {
     this.load.image('mediaamba', '/images/mediaamba.png');
     this.load.image('nsn', '/images/nsn.jpg');
     this.load.image('tigerspike', '/images/tigerspike.png');
-    this.load.image('background', '/images/map61x36.png');
+    this.load.image('background', '/images/tiles/map89x68.png');
 
     this.load.image('building', '/images/intensememories1.png');
     this.load.image('ball', '/images/ball.png');
@@ -41,6 +43,7 @@ export default class extends Phaser.State {
     this._initBuildings();
     this._initializePlayer();
     this._initializeStudents();
+    this._initializeDialogBox();
   }
 
   update () {
@@ -65,7 +68,6 @@ export default class extends Phaser.State {
       player.body.velocity.x = 200;
       player.angle = 90;
       player.animations.play('walk_up', 15, true);
-
     }
      if (joystick.up.isDown) {
       player.body.velocity.y = -200;
@@ -85,7 +87,6 @@ export default class extends Phaser.State {
 
     if (spacebar.isDown) {
       if (this.physics.arcade.overlap(player, ball)) {
-        console.log(player.angle);
         switch (player.angle) {
           case 0:
             this.physics.arcade.moveToXY(ball, ball.x, ball.y - 400, 1000);
@@ -193,7 +194,30 @@ export default class extends Phaser.State {
   }
 
   _loadMap() {
-    this.add.tileSprite(0,0, 4800, 3200, 'background');
-    this.world.setBounds(0,0, 4800, 3200);
+    this.add.tileSprite(0,0, 2848, 2176, 'background');
+    this.world.setBounds(0,0, 2848, 2176);
+  }
+
+  _initializeDialogBox() {
+    dialogBox = this.add.graphics(0, 0);
+    dialogBox.beginFill('0x333333', 1);
+    dialogBox.drawRect(12, 568, 1000, 180);
+    dialogBox.fixedToCamera = true;
+    dialogBox.visible = false;
+  }
+
+  _showDialog(text) {
+    if (dialogBoxText !== undefined) {
+      dialogBoxText.destroy();
+    }
+    dialogBoxText = this.add.text(50, 590, text, {font: '16px Arial', fill: '#ffffff', wordWrap: true, wordWrapWidth: 900});
+    dialogBoxText.fixedToCamera = true;
+
+    dialogBox.visible = true;
+  }
+
+  _hideDialog() {
+    dialogBoxText.destroy();
+    dialogBox.visible = false;
   }
 }

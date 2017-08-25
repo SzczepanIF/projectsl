@@ -1,6 +1,6 @@
 const strings = {
   meta: {
-    title: 'Project SL',
+    title: 'Intense Memories',
     version: '0.0.1',
     author: 'Marcin Szczepanczyk'
   },
