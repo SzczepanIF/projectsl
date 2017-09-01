@@ -163,7 +163,11 @@ export default class extends Phaser.State {
   }
 
   _playSound() {
-    let music = this.sound.play('timetorun');
+    let music = this.add.audio('timetorun');
+
+    music.loop = true;
+
+    music.play();
   }
 
   _startNewGame() {

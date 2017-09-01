@@ -1,12 +1,6 @@
 var player,
   joystick,
   spacebar,
-  nk,
-  benq,
-  avaus,
-  mediaamba,
-  nsn,
-  tigerspike,
   ball,
   building,
   walkUp,
@@ -14,7 +8,9 @@ var player,
   walkLeft,
   walkRight,
   dialogBox,
-  dialogBoxText;
+  dialogBoxText,
+  fullScreenOverlay,
+  fullScreenOverlayText;
 
 export default class extends Phaser.State {
 
@@ -38,12 +34,25 @@ export default class extends Phaser.State {
   }
 
   create () {
-    this._loadMap();
     this.physics.startSystem(Phaser.Physics.ARCADE);
-    this._initBuildings();
     this._initializePlayer();
     this._initializeStudents();
-    this._initializeDialogBox();
+    this._showFullScreenOverlay('"Each relationship nortures a strength or weakness within you" \n\n Mike Murdock', false);
+    setTimeout(() => {
+      this._hideFullScreenOverlay();
+        setTimeout(() => {
+          this._showFullScreenOverlay('Prologue', false);
+
+          setTimeout(() => {
+            this._hideFullScreenOverlay();
+            this._loadMap();
+            this._initBuildings();
+            this._initializePlayer();
+            this._initializeStudents();
+            this._initializeDialogBox();
+          }, 5000);
+        }, 1000);
+    }, 5000);
   }
 
   update () {
@@ -204,6 +213,7 @@ export default class extends Phaser.State {
     dialogBox.drawRect(12, 568, 1000, 180);
     dialogBox.fixedToCamera = true;
     dialogBox.visible = false;
+    dialogBox.alpha = 0;
   }
 
   _showDialog(text) {
@@ -211,13 +221,50 @@ export default class extends Phaser.State {
       dialogBoxText.destroy();
     }
     dialogBoxText = this.add.text(50, 590, text, {font: '16px Arial', fill: '#ffffff', wordWrap: true, wordWrapWidth: 900});
+    dialogBoxText.alpha = 0;
     dialogBoxText.fixedToCamera = true;
 
     dialogBox.visible = true;
+    this.add.tween(dialogBox).to( { alpha: 1 }, 200, Phaser.Easing.Linear.None, true);
+    this.add.tween(dialogBoxText).to( { alpha: 1 }, 200, Phaser.Easing.Linear.None, true);
   }
 
   _hideDialog() {
     dialogBoxText.destroy();
     dialogBox.visible = false;
+    dialogBox.alpha = 0;
+  }
+
+  _showFullScreenOverlay(text, animateBackground = true) {
+    fullScreenOverlay = this.add.graphics(0, 0);
+    fullScreenOverlay.beginFill('0x000000', 1);
+    fullScreenOverlay.drawRect(0, 0, this.scale.width, this.scale.height);
+    fullScreenOverlay.fixedToCamera = true;
+    fullScreenOverlay.visible = true;
+    fullScreenOverlay.alpha = 0;
+
+    fullScreenOverlayText = this.add.text(0, 0, text, {font: '60px Arial', fill: '#ffffff', align: 'center', wordWrap: true, wordWrapWidth: this.scale.width, boundsAlignH: 'center', boundsAlignV: 'middle'});
+    fullScreenOverlayText.setTextBounds(0, 0, this.scale.width, this.scale.height);
+    fullScreenOverlayText.fixedToCamera = true;
+    fullScreenOverlayText.visible = true;
+    fullScreenOverlayText.alpha = 0;
+
+    if (animateBackground) {
+      fullScreenOverlay.alpha = 0;
+      this.add.tween(fullScreenOverlay).to( { alpha: 1 }, 400, Phaser.Easing.Linear.None, true);
+    } else {
+      fullScreenOverlay.alpha = 1;
+    }
+
+    this.add.tween(fullScreenOverlayText).to( { alpha: 1 }, 1000, Phaser.Easing.Linear.None, true);
+  }
+
+  _hideFullScreenOverlay() {
+    this.add.tween(fullScreenOverlayText).to( { alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
+    this.add.tween(fullScreenOverlay).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
+
+    setTimeout(() => {
+      fullScreenOverlay.destroy();
+    }, 2000);
   }
 }
