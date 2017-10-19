@@ -10,7 +10,8 @@ var player,
   dialogBox,
   dialogBoxText,
   fullScreenOverlay,
-  fullScreenOverlayText;
+  fullScreenOverlayText,
+  taxi;
 
 export default class extends Phaser.State {
 
@@ -19,16 +20,10 @@ export default class extends Phaser.State {
   }
   preload () {
     //this.load.image('player', '/images/unic-logo.png');
-    this.load.image('nk', '/images/nk.png');
-    this.load.image('benq', '/images/benq.png');
-    this.load.image('avaus', '/images/avaus.jpg');
-    this.load.image('mediaamba', '/images/mediaamba.png');
-    this.load.image('nsn', '/images/nsn.jpg');
-    this.load.image('tigerspike', '/images/tigerspike.png');
     this.load.image('background', '/images/tiles/map89x68.png');
 
-    this.load.image('building', '/images/intensememories1.png');
     this.load.image('ball', '/images/ball.png');
+    this.load.image('car', '/images/car.png');
 
     this.load.spritesheet('player', '/images/player_up.png', 32, 32, 4);
   }
@@ -36,7 +31,7 @@ export default class extends Phaser.State {
   create () {
     this.physics.startSystem(Phaser.Physics.ARCADE);
     this._initializePlayer();
-    this._initializeStudents();
+    this._initializeObjects();
     this._showFullScreenOverlay('"Each relationship nortures a strength or weakness within you" \n\n Mike Murdock', false);
     setTimeout(() => {
       this._hideFullScreenOverlay();
@@ -47,9 +42,12 @@ export default class extends Phaser.State {
             this._hideFullScreenOverlay();
             this._loadMap();
             this._initBuildings();
-            this._initializePlayer();
-            this._initializeStudents();
+            this._initializeObjects();
             this._initializeDialogBox();
+            this._initializePlayer();
+            ball.alpha = 1;
+            player.alpha = 1;
+            taxi.alpha = 1;
           }, 5000);
         }, 1000);
     }, 5000);
@@ -120,9 +118,9 @@ export default class extends Phaser.State {
 //    this.physics.arcade.moveToObject(nsn, player, 130);
 //    this.physics.arcade.moveToObject(tigerspike, player, 250);
 
-    this.physics.arcade.collide(player, building);
+    this.physics.arcade.collide(player, taxi);
 
-    this.physics.arcade.collide (player, ball);
+    this.physics.arcade.collide(player, ball);
 
   }
 
@@ -140,45 +138,11 @@ export default class extends Phaser.State {
 
     joystick = this.input.keyboard.createCursorKeys();
     spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    player.alpha = 0;
 
   }
 
-  _initializeStudents() {
-  /*  nk = this.add.sprite(100, 100, 'nk');
-    nk.anchor.setTo(0.5, 0.5);
-    this.physics.enable(nk);
-    nk.enableBody = true;
-    nk.body.velocity.set(5);
-
-    benq = this.add.sprite(400, 400, 'benq');
-    benq.anchor.setTo(0.5, 0.5);
-    this.physics.enable(benq);
-    benq.enableBody = true;
-    benq.body.velocity.set(5);
-
-    avaus = this.add.sprite(150,150, 'avaus');
-    avaus.anchor.setTo(0.5, 0.5);
-    this.physics.enable(avaus);
-    avaus.enableBody = true;
-    avaus.body.velocity.set(5);
-
-    mediaamba = this.add.sprite(150,150, 'mediaamba');
-    mediaamba.anchor.setTo(0.5, 0.5);
-    this.physics.enable(mediaamba);
-    mediaamba.enableBody = true;
-    mediaamba.body.velocity.set(5);
-
-    nsn = this.add.sprite(500,500, 'nsn');
-    nsn.anchor.setTo(0.5, 0.5);
-    this.physics.enable(nsn);
-    nsn.enableBody = true;
-    nsn.body.velocity.set(5);
-
-    tigerspike = this.add.sprite(100,600, 'tigerspike');
-    tigerspike.anchor.setTo(0.5, 0.5);
-    this.physics.enable(tigerspike);
-    tigerspike.enableBody = true;
-    tigerspike.body.velocity.set(5);*/
+  _initializeObjects() {
 
     ball = this.add.sprite(205, 200, 'ball');
     ball.anchor.setTo(0.5, 0.5);
@@ -189,6 +153,18 @@ export default class extends Phaser.State {
     ball.body.immovable = false;
     ball.body.collideWorldBounds = true;
     ball.body.bounce.setTo(0.5, 0.5);
+    ball.alpha = 0;
+
+    taxi = this.add.sprite(300, 200, 'car');
+    this.physics.enable(taxi, Phaser.Physics.ARCADE);
+    taxi.enableBody = true;
+    taxi.body.moves = true;
+    taxi.body.collideWorldBounds = true;
+    taxi.body.velocity.set(0);
+    taxi.anchor.setTo(0.5, 0.5);
+    taxi.alpha = 0;
+    taxi.body.friction.x = 0.2;
+    taxi.body.friction.y = 0.1;
   }
 
   _initBuildings() {
@@ -243,7 +219,7 @@ export default class extends Phaser.State {
     fullScreenOverlay.visible = true;
     fullScreenOverlay.alpha = 0;
 
-    fullScreenOverlayText = this.add.text(0, 0, text, {font: '60px Arial', fill: '#ffffff', align: 'center', wordWrap: true, wordWrapWidth: this.scale.width, boundsAlignH: 'center', boundsAlignV: 'middle'});
+    fullScreenOverlayText = this.add.text(0, 0, text, {font: '52px Archivo Black', fill: '#dddddd', align: 'center', wordWrap: true, wordWrapWidth: this.scale.width, boundsAlignH: 'center', boundsAlignV: 'middle'});
     fullScreenOverlayText.setTextBounds(0, 0, this.scale.width, this.scale.height);
     fullScreenOverlayText.fixedToCamera = true;
     fullScreenOverlayText.visible = true;

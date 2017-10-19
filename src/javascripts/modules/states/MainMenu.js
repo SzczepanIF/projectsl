@@ -7,7 +7,9 @@ var cloud1,
   cloud5,
   cloud6,
   cloud7,
-  cloud8;
+  cloud8,
+  music,
+  gong;
 
 export default class extends Phaser.State {
   init () {}
@@ -16,6 +18,7 @@ export default class extends Phaser.State {
     this.load.image('cloud', '/images/cloud.png');
 
     this.load.audio('timetorun', '/music/timetorun.mp3');
+    this.load.audio('gong', '/sounds/gong.mp3');
 
   }
 
@@ -163,15 +166,32 @@ export default class extends Phaser.State {
   }
 
   _playSound() {
-    let music = this.add.audio('timetorun');
+    music = this.add.audio('timetorun');
 
     music.loop = true;
 
     music.play();
+
   }
 
   _startNewGame() {
     console.log('New Game Starting');
-    console.log(this.state.start('Game'));
+    gong = this.add.audio('gong');
+
+    console.log(gong);
+
+    gong.play();
+
+    for (let i = 1; i <= 10; i++) {
+      setTimeout(() => {
+        music.volume = music.volume - 0.1;
+
+        if (i == 10) {
+          music.stop();
+          this.state.start('Game');
+        }
+      }, i * 200);
+    }
+
   }
 }
