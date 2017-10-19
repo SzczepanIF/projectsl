@@ -1,6 +1,7 @@
 var player,
   joystick,
   spacebar,
+  enterkey,
   ball,
   building,
   walkUp,
@@ -8,10 +9,18 @@ var player,
   walkLeft,
   walkRight,
   dialogBox,
+  hintBoxText,
   dialogBoxText,
   fullScreenOverlay,
   fullScreenOverlayText,
-  taxi;
+  taxi,
+  stage1Music,
+  tosia,
+  tosiaUp,
+  tosiaDown,
+  tosiaLeft,
+  tosiaRight,
+  playerMovementBlocked;
 
 export default class extends Phaser.State {
 
@@ -24,6 +33,7 @@ export default class extends Phaser.State {
 
     this.load.image('ball', '/images/ball.png');
     this.load.image('car', '/images/car.png');
+    this.load.audio('moonlight', '/music/moonlight.mp3');
 
     this.load.spritesheet('player', '/images/player_up.png', 32, 32, 4);
   }
@@ -32,9 +42,13 @@ export default class extends Phaser.State {
     this.physics.startSystem(Phaser.Physics.ARCADE);
     this._initializePlayer();
     this._initializeObjects();
+    playerMovementBlocked = false;
     this._showFullScreenOverlay('"Each relationship nortures a strength or weakness within you" \n\n Mike Murdock', false);
     setTimeout(() => {
       this._hideFullScreenOverlay();
+      stage1Music = this.add.audio('moonlight');
+      stage1Music.loop = true;
+      stage1Music.play();
         setTimeout(() => {
           this._showFullScreenOverlay('Prologue', false);
 
@@ -44,10 +58,13 @@ export default class extends Phaser.State {
             this._initBuildings();
             this._initializeObjects();
             this._initializeDialogBox();
+            this._initializeHint();
             this._initializePlayer();
             ball.alpha = 1;
             player.alpha = 1;
             taxi.alpha = 1;
+            tosia.alpha = 1;
+            this._showHint('June, 2017');
           }, 5000);
         }, 1000);
     }, 5000);
@@ -65,24 +82,24 @@ export default class extends Phaser.State {
       ball.body.velocity.y--;
     }
 
-    if (joystick.left.isDown) {
+    if (joystick.left.isDown && !playerMovementBlocked) {
       player.body.velocity.x = -200;
       player.angle = 270;
       player.animations.play('walk_up', 15, true);
 
     }
-    if (joystick.right.isDown) {
+    if (joystick.right.isDown && !playerMovementBlocked) {
       player.body.velocity.x = 200;
       player.angle = 90;
       player.animations.play('walk_up', 15, true);
     }
-     if (joystick.up.isDown) {
+    if (joystick.up.isDown && !playerMovementBlocked) {
       player.body.velocity.y = -200;
       player.angle = 0;
       player.animations.play('walk_up', 15, true);
 
     }
-     if (joystick.down.isDown) {
+     if (joystick.down.isDown && !playerMovementBlocked) {
       player.body.velocity.y = 200;
       player.angle = 180;
       player.animations.play('walk_up', 15, true);
@@ -91,6 +108,8 @@ export default class extends Phaser.State {
     if (!joystick.left.isDown && !joystick.right.isDown && !joystick.up.isDown && !joystick.down.isDown) {
       player.animations.stop(null, true);
     }
+
+
 
     if (spacebar.isDown) {
       if (this.physics.arcade.overlap(player, ball)) {
@@ -110,17 +129,21 @@ export default class extends Phaser.State {
         }
       }
     }
-
-  //  this.physics.arcade.moveToObject(nk, player, 100);
-//    this.physics.arcade.moveToObject(benq, player, 200);
-//    this.physics.arcade.moveToObject(avaus, player, 150);
-//  //  this.physics.arcade.moveToObject(mediaamba, player, 90);
-//    this.physics.arcade.moveToObject(nsn, player, 130);
-//    this.physics.arcade.moveToObject(tigerspike, player, 250);
+    if (enterkey.isDown) {
+      if (dialogBox.visible) {
+        this._hideDialog();
+      } else {
+        if (this.physics.arcade.overlap(player, taxi)) {
+          this._showDialog('Dude,what do yo want from me? Need a ride or I\'d suggest you to get of the way.');
+        }
+      }
+    }
 
     this.physics.arcade.collide(player, taxi);
 
     this.physics.arcade.collide(player, ball);
+
+    this.physics.arcade.collide(taxi, ball);
 
   }
 
@@ -129,17 +152,22 @@ export default class extends Phaser.State {
   }
 
   _initializePlayer() {
-    player = this.add.sprite(200, 200, 'player');
+    player = this.add.sprite(500, 480, 'player');
     player.anchor.setTo(0.5, 0.5);
     this.physics.enable(player, Phaser.Physics.ARCADE);
-    this.camera.follow(player);
     player.body.collidWorldBounds = true;
     walkUp = player.animations.add('walk_up');
 
     joystick = this.input.keyboard.createCursorKeys();
     spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    enterkey = this.input.keyboard.addKey(Phaser.Keyboard.ENTER);
     player.alpha = 0;
+    player.angle = 180;
 
+  }
+
+  _setCameraOnPlayer() {
+    this.camera.follow(player);
   }
 
   _initializeObjects() {
@@ -149,22 +177,33 @@ export default class extends Phaser.State {
     this.physics.enable(ball, Phaser.Physics.ARCADE);
     ball.enableBody = true;
     ball.body.moves = true;
+    ball.body.drag.x = 5;
+    ball.body.drag.y = 5;
     ball.body.velocity.set(0);
     ball.body.immovable = false;
     ball.body.collideWorldBounds = true;
     ball.body.bounce.setTo(0.5, 0.5);
     ball.alpha = 0;
 
-    taxi = this.add.sprite(300, 200, 'car');
+    taxi = this.add.sprite(650, 500, 'car');
     this.physics.enable(taxi, Phaser.Physics.ARCADE);
     taxi.enableBody = true;
     taxi.body.moves = true;
     taxi.body.collideWorldBounds = true;
     taxi.body.velocity.set(0);
+    taxi.body.drag.x = 10;
+    taxi.body.drag.y = 180;
     taxi.anchor.setTo(0.5, 0.5);
     taxi.alpha = 0;
-    taxi.body.friction.x = 0.2;
-    taxi.body.friction.y = 0.1;
+
+    tosia = this.add.sprite(500, 500, 'player');
+    player.anchor.setTo(0.5, 0.5);
+    this.physics.enable(tosia, Phaser.Physics.ARCADE);
+    tosiaUp = tosia.animations.add('walk_up');
+    tosiaDown = tosia.animations.add('walk_down');
+    tosiaLeft = tosia.animations.add('walk_left');
+    tosiaRight = tosia.animations.add('walk_right');
+    tosia.alpha = 0;
   }
 
   _initBuildings() {
@@ -181,6 +220,19 @@ export default class extends Phaser.State {
   _loadMap() {
     this.add.tileSprite(0,0, 2848, 2176, 'background');
     this.world.setBounds(0,0, 2848, 2176);
+
+    this.camera.x = 800;
+    this.camera.y = 90;
+
+    for (let i = 0; i <= 800; i++) {
+      setTimeout(() => {
+        this.camera.x -= 1;
+        if (i === 800) {
+          this.camera.follow(player);
+          this._hideHint();
+        }
+      }, i * 10);
+    }
   }
 
   _initializeDialogBox() {
@@ -196,6 +248,7 @@ export default class extends Phaser.State {
     if (dialogBoxText !== undefined) {
       dialogBoxText.destroy();
     }
+
     dialogBoxText = this.add.text(50, 590, text, {font: '16px Arial', fill: '#ffffff', wordWrap: true, wordWrapWidth: 900});
     dialogBoxText.alpha = 0;
     dialogBoxText.fixedToCamera = true;
@@ -211,6 +264,25 @@ export default class extends Phaser.State {
     dialogBox.alpha = 0;
   }
 
+  _showHint(text) {
+    if (hintBoxText !== undefined) {
+      hintBoxText.destroy();
+    }
+    hintBoxText  = this.add.text(50, 690, text, {font: '32px archivo_blackregular', align: 'right', fill: '#ffffff', wordWrap: true, wordWrapWidth: 900});
+    hintBoxText.alpha = 0;
+    hintBoxText.fixedToCamera = true;
+    this.add.tween(hintBoxText).to( { alpha: 1 }, 2000, Phaser.Easing.Linear.None, true);
+
+  }
+
+  _initializeHint() {
+    console.log('init');
+  }
+
+  _hideHint(text) {
+    hintBoxText.destroy();
+  }
+
   _showFullScreenOverlay(text, animateBackground = true) {
     fullScreenOverlay = this.add.graphics(0, 0);
     fullScreenOverlay.beginFill('0x000000', 1);
@@ -219,7 +291,7 @@ export default class extends Phaser.State {
     fullScreenOverlay.visible = true;
     fullScreenOverlay.alpha = 0;
 
-    fullScreenOverlayText = this.add.text(0, 0, text, {font: '52px Archivo Black', fill: '#dddddd', align: 'center', wordWrap: true, wordWrapWidth: this.scale.width, boundsAlignH: 'center', boundsAlignV: 'middle'});
+    fullScreenOverlayText = this.add.text(0, 0, text, {font: '52px archivo_blackregular', fill: '#dddddd', align: 'center', wordWrap: true, wordWrapWidth: this.scale.width, boundsAlignH: 'center', boundsAlignV: 'middle'});
     fullScreenOverlayText.setTextBounds(0, 0, this.scale.width, this.scale.height);
     fullScreenOverlayText.fixedToCamera = true;
     fullScreenOverlayText.visible = true;

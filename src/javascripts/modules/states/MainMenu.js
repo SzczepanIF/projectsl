@@ -79,7 +79,7 @@ export default class extends Phaser.State {
     this._playSound();
 
     let banner = this.add.text(320, 80, 'My Game Title');
-      banner.font = 'Berkshire Swash';
+      banner.font = 'berkshire_swashregular';
       banner.padding.set(20, 16);
       banner.fontSize = 60;
       banner.fill = '#fff';
@@ -88,7 +88,7 @@ export default class extends Phaser.State {
       banner.setShadow(0, 5, 'rgba(0,0,0,0.5)', 10);
 
     let newGame = this.add.text(this.world.centerX, 450, strings.menu.newGame)
-      newGame.font = "Berkshire Swash"
+      newGame.font = "berkshire_swashregular"
       newGame.fontSize = 50
       newGame.fill = '#fff'
       newGame.anchor.setTo(0.5);
@@ -99,10 +99,7 @@ export default class extends Phaser.State {
       newGame.alpha = 0.8;
 
 
-    let loadGame = this.add.text(this.world.centerX, 550, strings.menu.loadGame)
-      loadGame.font = "Berkshire Swash"
-      loadGame.fontSize = 50
-      loadGame.fill = '#fff'
+    let loadGame = this.add.text(this.world.centerX, 550, strings.menu.loadGame, { font: '50px berkshire_swashregular', fill: '#ffffff'});
       loadGame.anchor.setTo(0.5);
       loadGame.setShadow(0, 5, 'rgba(255,255,255,0.5)', 10);
       this._menuHoverEffect(loadGame);
@@ -175,10 +172,7 @@ export default class extends Phaser.State {
   }
 
   _startNewGame() {
-    console.log('New Game Starting');
     gong = this.add.audio('gong');
-
-    console.log(gong);
 
     gong.play();
 

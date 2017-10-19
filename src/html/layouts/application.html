@@ -5,9 +5,23 @@
     <meta charset="utf-8">
     <title>{% block title %}{{ title }}{% endblock %}</title>
     <link rel="stylesheet" href="stylesheets/app.css">
+
+    <style>
+    @font-face {
+      font-family: 'archivo_blackregular';
+      src: url('/fonts/archivoblack-regular-webfont.woff2') format('woff2'), url('/fonts/archivoblack-regular-webfont.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'berkshire_swashregular';
+      src: url('/fonts/BerkshireSwash-Regular.ttf') format('ttf'), url('/fonts/berkshireswash-regular-webfont.woff2') format('woff2'), url(' /fonts/berkshireswash-regular-webfont.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+    </style>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Berkshire+Swash" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Archivo+Black" rel="stylesheet">
     {% include "shared/app-icons.html" %}
     {% block head %}{% endblock %}
   </head>
@@ -15,7 +29,16 @@
     {% block content %}{% endblock %}
     {% block javascript %}
       <script src="//cdn.jsdelivr.net/phaser/2.6.2/phaser.js"></script>
-      <script src="javascripts/app.js"></script>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var tag = document.createElement("script");
+          tag.src = "javascripts/app.js";
+          document.getElementsByTagName("head")[0].appendChild(tag);
+        });
+      </script>
     {% endblock %}
+
+    <div style="font-family: 'archivo_blackregular', 'berkshire_swashregular'; position: absolute; left: -1000000px;"></div>
   </body>
 </html>
