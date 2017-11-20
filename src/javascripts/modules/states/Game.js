@@ -159,8 +159,10 @@ export default class extends Phaser.State {
           }, 100);
         }
       } else {
-        if (this.physics.arcade.overlap(player, taxi)) {
-          this._showDialog('Dude, what do yo want from me? Need a ride or I\'d suggest you to get of the way.');
+        if (this.physics.arcade.overlap(player, taxi) || this.physics.arcade.collide(player, taxi)) {
+          setTimeout(() => {
+            this._showDialog('Dude, what do yo want from me? Need a ride or I\'d suggest you to get of the way.');
+          }, 50);
         }
       }
     }

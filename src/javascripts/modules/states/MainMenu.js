@@ -74,9 +74,8 @@ export default class extends Phaser.State {
   }
 
   _loadMainMenu() {
-
-    this._loadBackground();
     this._playSound();
+    this._loadBackground();
 
     let banner = this.add.text(320, 80, 'Intense Memories');
       banner.font = 'berkshire_swashregular';
