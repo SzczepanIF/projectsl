@@ -36,6 +36,7 @@ export default class extends Phaser.State {
     this.load.audio('moonlight', '/music/moonlight.mp3');
 
     this.load.spritesheet('player', '/images/player_up.png', 32, 32, 4);
+    this.load.spritesheet('tosia', '/images/tosia.png', 32, 32, 4);
   }
 
   create () {
@@ -134,7 +135,7 @@ export default class extends Phaser.State {
         this._hideDialog();
       } else {
         if (this.physics.arcade.overlap(player, taxi)) {
-          this._showDialog('Dude,what do yo want from me? Need a ride or I\'d suggest you to get of the way.');
+          this._showDialog('Dude, what do yo want from me? Need a ride or I\'d suggest you to get of the way.');
         }
       }
     }
@@ -145,6 +146,9 @@ export default class extends Phaser.State {
 
     this.physics.arcade.collide(taxi, ball);
 
+    this.physics.arcade.collide(tosia, taxi);
+
+    this.physics.arcade.collide(player, tosia);
   }
 
   render () {
@@ -196,9 +200,11 @@ export default class extends Phaser.State {
     taxi.anchor.setTo(0.5, 0.5);
     taxi.alpha = 0;
 
-    tosia = this.add.sprite(500, 500, 'player');
+    tosia = this.add.sprite(500, 500, 'tosia');
     player.anchor.setTo(0.5, 0.5);
     this.physics.enable(tosia, Phaser.Physics.ARCADE);
+    tosia.enableBody = true;
+    tosia.body.moves = false;
     tosiaUp = tosia.animations.add('walk_up');
     tosiaDown = tosia.animations.add('walk_down');
     tosiaLeft = tosia.animations.add('walk_left');

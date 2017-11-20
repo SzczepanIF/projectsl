@@ -78,7 +78,7 @@ export default class extends Phaser.State {
     this._loadBackground();
     this._playSound();
 
-    let banner = this.add.text(320, 80, 'My Game Title');
+    let banner = this.add.text(320, 80, 'Intense Memories');
       banner.font = 'berkshire_swashregular';
       banner.padding.set(20, 16);
       banner.fontSize = 60;
