@@ -22,7 +22,18 @@ var player,
   tosiaDown,
   tosiaLeft,
   tosiaRight,
-  playerMovementBlocked;
+  playerMovementBlocked,
+  tree,
+  tree2,
+  tree3,
+  tree4,
+  tree5,
+  tree6,
+  car,
+  pedestrianUp,
+  pedestrian2Up,
+  pedestrian1,
+  pedestrian2;
 
 export default class extends Phaser.State {
 
@@ -37,6 +48,8 @@ export default class extends Phaser.State {
     this.load.image('car', '/images/car.png');
     this.load.image('player_avatar', '/images/player_avatar.png');
     this.load.image('tosia_avatar', '/images/tosia_avatar.png');
+    this.load.image('tree', '/images/tree.png');
+    this.load.image('buildingFlats', '/images/building1.png');
     this.load.audio('moonlight', '/music/moonlight.mp3');
 
     this.load.spritesheet('player', '/images/player_up.png', 32, 32, 4);
@@ -50,6 +63,7 @@ export default class extends Phaser.State {
     this.initialConversation = 0;
     this._conversations();
     this.tosiaWalkAway = false;
+    this.pedestrianWalking = false;
     playerMovementBlocked = false;
     this._showFullScreenOverlay('"Each relationship nortures a strength or weakness within you" \n\n Mike Murdock', false);
     setTimeout(() => {
@@ -64,14 +78,18 @@ export default class extends Phaser.State {
             this._hideFullScreenOverlay();
             this._loadMap();
             this._initBuildings();
+            this._initTrees();
             this._initializeObjects();
             this._initializeDialogBox();
             this._initializeHint();
             this._initializePlayer();
+            this.pedestrianWalking = true;
             ball.alpha = 1;
             player.alpha = 1;
             taxi.alpha = 1;
             tosia.alpha = 1;
+            pedestrian1.alpha = 1;
+            pedestrian2.alpha = 1;
             this._showHint('June, 2017');
           }, 5000);
         }, 1000);
@@ -88,6 +106,23 @@ export default class extends Phaser.State {
       tosia.animations.play('walk_up', 15, true);
       if (tosia.position.x < -50) {
         this.tosiaWalkAway = false;
+      }
+    }
+
+    if (this.pedestrianWalking) {
+      pedestrian1.body.velocity.x = 100;
+      pedestrian1.angle = 90;
+      pedestrian2.body.velocity.x = -100;
+      pedestrian2.angle = 270;
+
+      pedestrian1.animations.play('walk_up', 15, true);
+      pedestrian2.animations.play('walk_up', 15, true);
+      if (pedestrian1.position.x > 6000) {
+        pedestrian1.position.x = -50;
+      }
+
+      if (pedestrian2.position.x > 6000) {
+        pedestrian2.position.x = -50;
       }
     }
 
@@ -176,6 +211,20 @@ export default class extends Phaser.State {
     this.physics.arcade.collide(tosia, taxi);
 
     this.physics.arcade.collide(player, tosia);
+
+    this.physics.arcade.collide(player, building);
+
+    this.physics.arcade.collide(player, tree);
+
+    this.physics.arcade.collide(player, tree2);
+
+    this.physics.arcade.collide(player, tree3);
+
+    this.physics.arcade.collide(player, tree4);
+
+    this.physics.arcade.collide(player, tree5);
+
+    this.physics.arcade.collide(player, tree6);
   }
 
   render () {
@@ -234,17 +283,77 @@ export default class extends Phaser.State {
     tosia.body.moves = true;
     tosiaUp = tosia.animations.add('walk_up');
     tosia.alpha = 0;
+
+    pedestrian1 = this.add.sprite(10, 400, 'player');
+    pedestrian1.anchor.setTo(0.5, 0.5);
+    this.physics.enable(pedestrian1, Phaser.Physics.ARCADE);
+    pedestrian1.enableBody = true;
+    pedestrian1.body.moves = true;
+    pedestrianUp = pedestrian1.animations.add('walk_up');
+    pedestrian1.alpha = 0;
+
+    pedestrian2 = this.add.sprite(3500, 400, 'player');
+    pedestrian2.anchor.setTo(0.5, 0.5);
+    this.physics.enable(pedestrian2, Phaser.Physics.ARCADE);
+    pedestrian2.enableBody = true;
+    pedestrian1.body.moves = true;
+    pedestrian2Up = pedestrian2.animations.add('walk_up');
+    pedestrian2.alpha = 0;
   }
 
   _initBuildings() {
-    building = this.add.sprite(700, -75, 'building');
-    building.anchor.setTo(0.5, 0.5);
+    building = this.add.sprite(0, 10, 'buildingFlats');
+    building.anchor.setTo(0, 0);
     this.physics.enable(building);
     building.enableBody = true;
     building.body.velocity.set(1);
     building.body.moves = false;
     building.body.collideWorldBounds = true;
 
+  }
+
+  _initTrees() {
+    tree = this.add.sprite(650, 45, 'tree');
+    tree.anchor.setTo(0, 0);
+    this.physics.enable(tree);
+    tree.enableBody = true;
+    tree.body.velocity.set(1);
+    tree.body.moves = false;
+
+    tree2 = this.add.sprite(900, 45, 'tree');
+    tree2.anchor.setTo(0, 0);
+    this.physics.enable(tree2);
+    tree2.enableBody = true;
+    tree2.body.velocity.set(1);
+    tree2.body.moves = false;
+
+    tree3 = this.add.sprite(1150, 45, 'tree');
+    tree3.anchor.setTo(0, 0);
+    this.physics.enable(tree3);
+    tree3.enableBody = true;
+    tree3.body.velocity.set(1);
+    tree3.body.moves = false;
+
+    tree4 = this.add.sprite(1400, 45, 'tree');
+    tree4.anchor.setTo(0, 0);
+    this.physics.enable(tree4);
+    tree4.enableBody = true;
+    tree4.body.velocity.set(1);
+    tree4.body.moves = false;
+
+    tree5 = this.add.sprite(1650, 45, 'tree');
+    tree5.anchor.setTo(0, 0);
+    this.physics.enable(tree5);
+    tree5.enableBody = true;
+    tree5.body.velocity.set(1);
+    tree5.body.moves = false;
+
+    tree6 = this.add.sprite(1900, 45, 'tree');
+    tree6.anchor.setTo(0, 0);
+    this.physics.enable(tree6);
+    tree6.enableBody = true;
+    tree6.body.velocity.set(1);
+    tree6.body.moves = false;
   }
 
   _conversations() {
