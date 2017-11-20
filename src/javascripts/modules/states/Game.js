@@ -1,4 +1,5 @@
 var player,
+  playerAvatar,
   joystick,
   spacebar,
   enterkey,
@@ -16,6 +17,7 @@ var player,
   taxi,
   stage1Music,
   tosia,
+  tosiaAvatar,
   tosiaUp,
   tosiaDown,
   tosiaLeft,
@@ -33,6 +35,8 @@ export default class extends Phaser.State {
 
     this.load.image('ball', '/images/ball.png');
     this.load.image('car', '/images/car.png');
+    this.load.image('player_avatar', '/images/player_avatar.png');
+    this.load.image('tosia_avatar', '/images/tosia_avatar.png');
     this.load.audio('moonlight', '/music/moonlight.mp3');
 
     this.load.spritesheet('player', '/images/player_up.png', 32, 32, 4);
@@ -82,6 +86,9 @@ export default class extends Phaser.State {
       tosia.body.velocity.x = -200;
       tosia.angle = 270;
       tosia.animations.play('walk_up', 15, true);
+      if (tosia.position.x < -50) {
+        this.tosiaWalkAway = false;
+      }
     }
 
     if (ball.body.velocity.x > 0) {
@@ -148,7 +155,7 @@ export default class extends Phaser.State {
         }
         if (this.conversations[this.initialConversation] !== undefined) {
           setTimeout(() => {
-            this._showDialog(this.conversations[this.initialConversation]);
+            this._showDialog(this.conversations[this.initialConversation].text, this.conversations[this.initialConversation].avatar);
           }, 100);
         }
       } else {
@@ -240,12 +247,19 @@ export default class extends Phaser.State {
 
   _conversations() {
 
-    this.conversations = [
-      'You didn\'t have to do it, Martin. You\'re picking wrong assumptions, again.',
-      'Doing what? What did I wrong this time?',
-      'Nevermind. We should not meet again for some time.',
-      'Bye.'
-    ];
+    this.conversations = [{
+      text: 'You didn\'t have to do it, Marc. You\'re picking wrong assumptions, again.',
+      avatar: 'tosia'
+    }, {
+      text: 'Doing what? What did I do wrong this time?',
+      avatar: 'player'
+    }, {
+      text: 'Nevermind. We should not meet again for some time. I think this would be better to both of us.',
+      avatar: 'tosia'
+    }, {
+      text: 'Bye, Marc.',
+      avatar: 'tosia'
+    }];
 
   }
 
@@ -266,7 +280,7 @@ export default class extends Phaser.State {
         if (i === 800) {
           this.camera.follow(player);
           this._hideHint();
-          this._showDialog('You didn\'t have to do it, Martin. You\'re picking wrong assumptions, again.')
+          this._showDialog('You didn\'t have to do it, Martin. You\'re picking wrong assumptions, again.', 'tosia');
         }
       }, i * 10);
     }
@@ -281,12 +295,24 @@ export default class extends Phaser.State {
     dialogBox.alpha = 0;
   }
 
-  _showDialog(text) {
+  _showDialog(text, avatar = null) {
     if (dialogBoxText !== undefined) {
       dialogBoxText.destroy();
     }
 
-    dialogBoxText = this.add.text(50, 590, text, {font: '16px Arial', fill: '#ffffff', wordWrap: true, wordWrapWidth: 900});
+    if (avatar !== null) {
+      dialogBoxText = this.add.text(100, 590, text, {font: '16px archivo_blackregular', fill: '#ffffff', wordWrap: true, wordWrapWidth: 900});
+      if (avatar === 'player') {
+        playerAvatar = this.add.sprite(30, 670, 'player_avatar');
+      }
+
+      if (avatar === 'tosia') {
+        playerAvatar = this.add.sprite(30, 670, 'tosia_avatar');
+      }
+
+    } else {
+      dialogBoxText = this.add.text(50, 590, text, {font: '16px archivo_blackregular', fill: '#ffffff', wordWrap: true, wordWrapWidth: 900});
+    }
     dialogBoxText.alpha = 0;
     dialogBoxText.fixedToCamera = true;
 
@@ -296,6 +322,9 @@ export default class extends Phaser.State {
   }
 
   _hideDialog() {
+    if (playerAvatar) {
+      playerAvatar.destroy();
+    }
     dialogBoxText.destroy();
     dialogBox.visible = false;
     dialogBox.alpha = 0;
