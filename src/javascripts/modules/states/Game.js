@@ -43,6 +43,9 @@ export default class extends Phaser.State {
     this.physics.startSystem(Phaser.Physics.ARCADE);
     this._initializePlayer();
     this._initializeObjects();
+    this.initialConversation = 0;
+    this._conversations();
+    this.tosiaWalkAway = false;
     playerMovementBlocked = false;
     this._showFullScreenOverlay('"Each relationship nortures a strength or weakness within you" \n\n Mike Murdock', false);
     setTimeout(() => {
@@ -74,6 +77,12 @@ export default class extends Phaser.State {
   update () {
 
     player.body.velocity.set(0);
+
+    if (this.tosiaWalkAway) {
+      tosia.body.velocity.x = -200;
+      tosia.angle = 270;
+      tosia.animations.play('walk_up', 15, true);
+    }
 
     if (ball.body.velocity.x > 0) {
       ball.body.velocity.x--;
@@ -133,6 +142,15 @@ export default class extends Phaser.State {
     if (enterkey.isDown) {
       if (dialogBox.visible) {
         this._hideDialog();
+        this.initialConversation++;
+        if (this.initialConversation === 4) {
+          this._characterWalkAway();
+        }
+        if (this.conversations[this.initialConversation] !== undefined) {
+          setTimeout(() => {
+            this._showDialog(this.conversations[this.initialConversation]);
+          }, 100);
+        }
       } else {
         if (this.physics.arcade.overlap(player, taxi)) {
           this._showDialog('Dude, what do yo want from me? Need a ride or I\'d suggest you to get of the way.');
@@ -201,14 +219,11 @@ export default class extends Phaser.State {
     taxi.alpha = 0;
 
     tosia = this.add.sprite(500, 500, 'tosia');
-    player.anchor.setTo(0.5, 0.5);
+    tosia.anchor.setTo(0.5, 0.5);
     this.physics.enable(tosia, Phaser.Physics.ARCADE);
     tosia.enableBody = true;
-    tosia.body.moves = false;
+    tosia.body.moves = true;
     tosiaUp = tosia.animations.add('walk_up');
-    tosiaDown = tosia.animations.add('walk_down');
-    tosiaLeft = tosia.animations.add('walk_left');
-    tosiaRight = tosia.animations.add('walk_right');
     tosia.alpha = 0;
   }
 
@@ -221,6 +236,21 @@ export default class extends Phaser.State {
     building.body.moves = false;
     building.body.collideWorldBounds = true;
 
+  }
+
+  _conversations() {
+
+    this.conversations = [
+      'You didn\'t have to do it, Martin. You\'re picking wrong assumptions, again.',
+      'Doing what? What did I wrong this time?',
+      'Nevermind. We should not meet again for some time.',
+      'Bye.'
+    ];
+
+  }
+
+  _characterWalkAway() {
+    this.tosiaWalkAway = true;
   }
 
   _loadMap() {
@@ -236,6 +266,7 @@ export default class extends Phaser.State {
         if (i === 800) {
           this.camera.follow(player);
           this._hideHint();
+          this._showDialog('You didn\'t have to do it, Martin. You\'re picking wrong assumptions, again.')
         }
       }, i * 10);
     }
@@ -243,7 +274,7 @@ export default class extends Phaser.State {
 
   _initializeDialogBox() {
     dialogBox = this.add.graphics(0, 0);
-    dialogBox.beginFill('0x333333', 1);
+    dialogBox.beginFill('0x498c31', 1);
     dialogBox.drawRect(12, 568, 1000, 180);
     dialogBox.fixedToCamera = true;
     dialogBox.visible = false;
@@ -260,7 +291,7 @@ export default class extends Phaser.State {
     dialogBoxText.fixedToCamera = true;
 
     dialogBox.visible = true;
-    this.add.tween(dialogBox).to( { alpha: 1 }, 200, Phaser.Easing.Linear.None, true);
+    this.add.tween(dialogBox).to( { alpha: 0.7 }, 200, Phaser.Easing.Linear.None, true);
     this.add.tween(dialogBoxText).to( { alpha: 1 }, 200, Phaser.Easing.Linear.None, true);
   }
 
